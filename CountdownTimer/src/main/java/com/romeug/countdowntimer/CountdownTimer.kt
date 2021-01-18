@@ -23,6 +23,15 @@ interface CountdownTimerListener {
     fun onTick()
 }
 
+/**
+ * A countdown timer that derives from the Android [Chronometer]
+ *
+ * This class
+ *
+ * @property elapsedTimeLimit
+ * @property remainingTimeLimit
+ *
+ */
 class CountdownTimer : Chronometer {
 
     private var elapsedFlag: Boolean = true
@@ -105,6 +114,17 @@ class CountdownTimer : Chronometer {
         this.onChronometerTickListener = defaultOnChronometerTickListener
     }
 
+    /**
+     * Starts the timer.
+     *
+     * It executes [CountdownTimerListener.onStart] and [Chronometer.start].
+     *
+     * Sets [state] to [TimerState.RUNNING].
+     * Sets [elapsedFlag] to true.
+     * Sets [remainingFlag] to true.
+     * Sets [startTime] to the result of [SystemClock.elapsedRealtime].
+     *
+     */
     override fun start() {
         this.state = TimerState.RUNNING
 
@@ -116,6 +136,13 @@ class CountdownTimer : Chronometer {
         super.start()
     }
 
+    /**
+     * Stops the timer.
+     *
+     * It executes [CountdownTimerListener.onStop] and [Chronometer.stop].
+     *
+     * Sets [state] to [TimerState.STOPPED]
+     */
     override fun stop() {
         this.state = TimerState.STOPPED
         this.countdownCountdownTimerListener.onStop()
@@ -126,14 +153,40 @@ class CountdownTimer : Chronometer {
         this.countdownCountdownTimerListener = listenerCountdown
     }
 
+    /**
+     * Get elapsed time in milliseconds.
+     *
+     * @return [Long]
+     */
     fun getElapsedTimeMs(): Long =
         this.startTime?.let { ((SystemClock.elapsedRealtime()) - it) } ?: 0L
 
+    /**
+     * Get elapsed time in seconds.
+     *
+     * @return [Long]
+     */
     fun getElapsedTimeSec(): Long = TimeUnit.MILLISECONDS.toSeconds(this.getElapsedTimeMs())
 
+    /**
+     * Get time left in milliseconds.
+     *
+     * @return [Long]
+     */
     fun getRemainingTimeMs(): Long = (this.base - SystemClock.elapsedRealtime())
+
+    /**
+     * Get time left in seconds.
+     *
+     * @return [Long]
+     */
     fun getRemainingTimeSec(): Long = TimeUnit.MILLISECONDS.toSeconds(this.getRemainingTimeMs())
 
+    /**
+     * Check if timer is running.
+     *
+     * @return True if running.
+     */
     fun isRunning(): Boolean = state == TimerState.RUNNING
 
     companion object {
