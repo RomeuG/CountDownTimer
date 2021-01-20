@@ -7,30 +7,8 @@ import android.widget.Chronometer
 import android.widget.Chronometer.OnChronometerTickListener
 import java.util.concurrent.TimeUnit
 
-enum class TimerState {
-    RUNNING, STOPPED
-}
-
-interface CountdownTimerListener {
-    fun onStart()
-    fun onStop()
-
-    fun onTimeElapsed()
-    fun onTimeRemaining()
-
-    fun onFinished()
-
-    fun onTick()
-}
-
 /**
- * A countdown timer that derives from the Android [Chronometer]
- *
- * This class
- *
- * @property elapsedTimeLimit
- * @property remainingTimeLimit
- *
+ * A countdown timer that derives from the Android [Chronometer].
  */
 class CountdownTimer : Chronometer {
 
@@ -41,10 +19,10 @@ class CountdownTimer : Chronometer {
 
     private var startTime: Long? = null
 
-    var elapsedTimeLimit: Long = DEFAULT_TIME_ELAPSED
-    var remainingTimeLimit: Long = DEFAULT_TIME_REMAINING
+    private var elapsedTimeLimit: Long = DEFAULT_TIME_ELAPSED
+    private var remainingTimeLimit: Long = DEFAULT_TIME_REMAINING
 
-    private var countdownCountdownTimerListener: CountdownTimerListener = object : CountdownTimerListener {
+    private var countdownTimerListener: CountdownTimerListener = object : CountdownTimerListener {
         override fun onStart() {
             //
         }
@@ -75,24 +53,24 @@ class CountdownTimer : Chronometer {
 
             this.elapsedTimeLimit.let { elapsedTime ->
                 if (this.elapsedFlag && this.getElapsedTimeSec() >= elapsedTime) {
-                    countdownCountdownTimerListener.onTimeElapsed()
+                    countdownTimerListener.onTimeElapsed()
                     this.elapsedFlag = false
                 }
             }
 
             this.remainingTimeLimit.let { remainingTime ->
                 if (this.remainingFlag && this.getRemainingTimeSec() <= remainingTime) {
-                    countdownCountdownTimerListener.onTimeRemaining()
+                    countdownTimerListener.onTimeRemaining()
                     this.remainingFlag = false
                 }
             }
 
             if (it.base <= SystemClock.elapsedRealtime()) {
                 this.stop()
-                countdownCountdownTimerListener.onFinished()
+                countdownTimerListener.onFinished()
             }
 
-            countdownCountdownTimerListener.onTick()
+            countdownTimerListener.onTick()
         }
 
     constructor(context: Context) : super(context, null)
@@ -131,7 +109,7 @@ class CountdownTimer : Chronometer {
         this.elapsedFlag = true
         this.remainingFlag = true
 
-        this.countdownCountdownTimerListener.onStart()
+        this.countdownTimerListener.onStart()
         this.startTime = SystemClock.elapsedRealtime()
         super.start()
     }
@@ -145,12 +123,35 @@ class CountdownTimer : Chronometer {
      */
     override fun stop() {
         this.state = TimerState.STOPPED
-        this.countdownCountdownTimerListener.onStop()
+        this.countdownTimerListener.onStop()
         super.stop()
     }
 
-    fun setTimerListener(listenerCountdown: CountdownTimerListener) {
-        this.countdownCountdownTimerListener = listenerCountdown
+    /**
+     * Sets [countdownTimerListener].
+     *
+     * @param listener Listener as [CountdownTimerListener].
+     */
+    fun setTimerListener(listener: CountdownTimerListener) {
+        this.countdownTimerListener = listener
+    }
+
+    /**
+     * Sets [elapsedTimeLimit].
+     *
+     * @param ms Time in seconds.
+     */
+    fun setElapsedTimeLimit(ms: Long) {
+        this.elapsedTimeLimit = ms
+    }
+
+    /**
+     * Sets [remainingTimeLimit].
+     *
+     * @param ms Time in seconds.
+     */
+    fun setRemainingTimeLimit(ms: Long) {
+        this.remainingTimeLimit = ms
     }
 
     /**
@@ -192,5 +193,48 @@ class CountdownTimer : Chronometer {
     companion object {
         const val DEFAULT_TIME_ELAPSED = 60L
         const val DEFAULT_TIME_REMAINING = 90L
+    }
+
+    /**
+     * Listener used in [CountdownTimer].
+     */
+    interface CountdownTimerListener {
+
+        /**
+         * Executes when timer starts by calling [start].
+         */
+        fun onStart()
+
+        /**
+         * Executes when timer is forced to stop by calling [stop].
+         */
+        fun onStop()
+
+        /**
+         * Executes when time elapsed matches [elapsedTimeLimit].
+         */
+        fun onTimeElapsed()
+
+        /**
+         * Executes when time remaining matches [remainingTimeLimit].
+         */
+        fun onTimeRemaining()
+
+        /**
+         * Executes when timer finishes normally.
+         */
+        fun onFinished()
+
+        /**
+         * Executes every time [OnChronometerTickListener] executes.
+         */
+        fun onTick()
+    }
+
+    /**
+     * Enum to define timer state.
+     */
+    enum class TimerState {
+        RUNNING, STOPPED
     }
 }
