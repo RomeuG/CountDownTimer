@@ -115,6 +115,31 @@ class CountdownTimer : Chronometer {
     }
 
     /**
+     * Starts the timer with provided start time value.
+     *
+     * It executes [CountdownTimerListener.onStart] and [Chronometer.start].
+     *
+     * Sets [state] to [TimerState.RUNNING].
+     * Sets [elapsedFlag] to true.
+     * Sets [remainingFlag] to true.
+     * Sets [startTime] to the result of [SystemClock.elapsedRealtime].
+     *
+     * @param ms Initial time in milliseconds.
+     */
+    fun start(ms: Long) {
+        this.setInitialTime(ms)
+
+        this.state = TimerState.RUNNING
+
+        this.elapsedFlag = true
+        this.remainingFlag = true
+
+        this.countdownTimerListener.onStart()
+        this.startTime = SystemClock.elapsedRealtime()
+        super.start()
+    }
+
+    /**
      * Stops the timer.
      *
      * It executes [CountdownTimerListener.onStop] and [Chronometer.stop].
@@ -152,6 +177,15 @@ class CountdownTimer : Chronometer {
      */
     fun setRemainingTimeLimit(ms: Long) {
         this.remainingTimeLimit = ms
+    }
+
+    /**
+     * Set [Chronometer] base (start time).
+     *
+     * @param ms Initial time in milliseconds.
+     */
+    fun setInitialTime(ms: Long) {
+        this.base = ms
     }
 
     /**

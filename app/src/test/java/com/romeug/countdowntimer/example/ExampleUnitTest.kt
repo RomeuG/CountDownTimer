@@ -1,4 +1,4 @@
-package com.romeug.countdowntimer
+package com.romeug.countdowntimer.example
 
 import org.junit.Test
 
