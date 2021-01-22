@@ -185,7 +185,7 @@ class CountdownTimer : Chronometer {
      * @param ms Initial time in milliseconds.
      */
     fun setInitialTime(ms: Long) {
-        this.base = ms
+        this.base = SystemClock.elapsedRealtime() + ms
     }
 
     /**
