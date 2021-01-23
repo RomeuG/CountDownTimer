@@ -1,7 +1,6 @@
 package com.romeug.countdowntimer.example
 
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +11,8 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val START_TIME = 300000L // 5 mins
     }
+
+    private var tickCounter = 0
 
     private var countdownTimer: CountdownTimer? = null
         get() {
@@ -60,6 +61,9 @@ class MainActivity : AppCompatActivity() {
         countdownTimer?.setTimerListener(object : CountdownTimer.CountdownTimerListener {
             override fun onStart() {
                 textViewListener?.text = "onStart() executed!"
+
+                tickCounter = 0
+                setTickCounter()
             }
 
             override fun onStop() {
@@ -80,7 +84,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onTick() {
-
+                setTickCounter()
+                tickCounter += 1
             }
         })
 
@@ -93,5 +98,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         countdownTimer?.setInitialTime(START_TIME)
+    }
+
+    private fun setTickCounter() {
+        textViewTick?.text = "onTick() = $tickCounter"
     }
 }
