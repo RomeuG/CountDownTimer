@@ -29,7 +29,7 @@ Then, just add this library as a dependency of your application:
 
 ```
 dependencies {
-    implementation 'com.github.romeug:CountDownTimer:Tag'
+    implementation 'com.github.romeug:CountDownTimer:1.0.0'
 }
 ```
 
